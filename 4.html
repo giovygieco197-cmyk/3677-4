@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>全能八字风水测算</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background: #f3e5ff;
+            padding: 20px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 26px;
+            margin: 10px 0 24px;
+            color: #5b3b8c;
+            font-weight: bold;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 22px;
+            padding: 26px;
+            margin-bottom: 24px;
+            box-shadow: 0 6px 16px rgba(91, 59, 140, 0.08);
+            border: 1px solid #f0e6ff;
+        }
+
+        .form-item {
+            margin-bottom: 20px;
+        }
+
+        .form-item label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: #4a307a;
+            font-weight: 500;
+        }
+
+        .form-item input,
+        .form-item select {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #e1d5ff;
+            border-radius: 14px;
+            font-size: 16px;
+            outline: none;
+            background: #fbf8ff;
+        }
+
+        .form-item input:focus {
+            border-color: #9c66ff;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            border-radius: 16px;
+            border: none;
+            background: #9c66ff;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .result {
+            background: white;
+            border-radius: 22px;
+            padding: 30px;
+            margin-top: 20px;
+            line-height: 1.8;
+            font-size: 16px;
+            color: #333;
+            white-space: pre-line;
+            display: none;
+            box-shadow: 0 6px 16px rgba(91, 59, 140, 0.08);
+            border: 1px solid #f0e6ff;
+        }
+
+        .result h2 {
+            color: #9c66ff;
+            text-align: center;
+            margin-bottom: 18px;
+            font-size: 22px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1 class="title">🧧 全能八字风水测算</h1>
+
+    <div class="card">
+        <div class="form-item">
+            <label>出生日期（阳历）</label>
+            <input type="date" id="birthDate" required>
+        </div>
+
+        <div class="form-item">
+            <label>出生时间</label>
+            <input type="time" id="birthTime" required>
+        </div>
+
+        <div class="form-item">
+            <label>姓名</label>
+            <input type="text" id="name" placeholder="输入姓名" required>
+        </div>
+
+        <div class="form-item">
+            <label>性别</label>
+            <select id="gender">
+                <option value="男">男</option>
+                <option value="女">女</option>
+            </select>
+        </div>
+
+        <div class="form-item">
+            <label>当前所在地</label>
+            <input type="text" id="location" placeholder="例如：广东省广州市" required>
+        </div>
+
+        <button class="btn" onclick="calcFullFengShui()">🧨 立即全面测算</button>
+    </div>
+
+    <div class="result" id="result"></div>
+
+<script>
+function calcFullFengShui() {
+    const birthDate = document.getElementById('birthDate').value;
+    const birthTime = document.getElementById('birthTime').value;
+    const name = document.getElementById('name').value;
+    const gender = document.getElementById('gender').value;
+    const location = document.getElementById('location').value;
+
+    if (!birthDate || !birthTime || !name || !location) {
+        alert("请填写完整信息！");
+        return;
+    }
+
+    const date = new Date(birthDate);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const hour = parseInt(birthTime.split(":")[0]) || 0;
+
+    // 核心数据
+    const naYin = getNaYin(year);
+    const wuXing = getWuXing(year);
+    const mingGua = getMingGua(year, gender);
+    const luckyDir = getLuckyDir(mingGua);
+    const luckyColor = getLuckyColor(wuXing);
+    const baZi = getBaZi(year, month, day, hour);
+    const strength = getBaZiStrength(year, wuXing);
+    const caiYun = getCaiYun(wuXing, strength);
+    const hunYin = getHunYin(gender, wuXing, strength);
+    const jianKang = getJianKang(wuXing);
+    const liuNian = getLiuNian(year);
+    const xingYe = getIndustry(wuXing);
+    const feng = getFengShuiTips(mingGua, luckyDir, luckyColor);
+
+    // 输出报告
+    const res = `
+🧧 【全能个人风水八字命盘】
+
+姓名：${name}
+性别：${gender}
+出生：${birthDate} ${birthTime}
+地址：${location}
+
+====================
+📌 一、基础命理
+====================
+• 生辰八字：${baZi}
+• 纳音五行：${naYin}
+• 本命属性：${wuXing} 命
+• 八字强弱：${strength}
+• 风水命卦：${mingGua}卦
+
+====================
+🎋 二、专属吉运
+====================
+• 有利方位：${luckyDir}
+• 幸运颜色：${luckyColor}
+• 适合行业：${xingYe}
+
+====================
+💰 三、财运分析
+====================
+${caiYun}
+
+====================
+❤️ 四、婚姻感情
+====================
+${hunYin}
+
+====================
+🏥 五、健康运势
+====================
+${jianKang}
+
+====================
+📅 六、流年整体
+====================
+${liuNian}
+
+====================
+🏮 七、家居风水建议
+====================
+${feng}
+
+====================
+✨ 整体总结
+====================
+你是${wuXing}${strength}之命，气场稳定，先天运势良好。
+只要顺势而为，布局有利风水，多往吉位发展，未来必定顺遂安康，富贵吉祥！
+    `;
+
+    const resultEl = document.getElementById('result');
+    resultEl.innerText = res;
+    resultEl.style.display = 'block';
+}
+
+// 六十甲子纳音
+function getNaYin(year) {
+    const list = ["海中金","炉中火","大林木","路旁土","剑锋金","山头火","涧下水","城头土","白腊金","杨柳木","泉中水","屋上土","霹雳火","松柏木","长流水","沙中金","山下火","平地木","壁上土","金箔金","覆灯火","天河水","大驿土","钗钏金","桑柘木","溪下水","沙中土","天上火","石榴木","大海水"];
+    return list[(year - 1924) % 30];
+}
+
+// 五行
+function getWuXing(year) {
+    const w = ["金","木","水","火","土"];
+    return w[(year - 1924) % 5];
+}
+
+// 命卦
+function getMingGua(year, gender) {
+    const num = (year - 1900) % 9;
+    let gua;
+    if(gender==="男"){
+        const g=(9-num)%9;
+        gua = [3,4,9,2,7,6,1,8][g] || "坎";
+    }else{
+        const g=(num+6)%9;
+        gua = [1,8,3,4,9,2,7,6][g] || "艮";
+    }
+    const map = {1:"坎",2:"坤",3:"震",4:"巽",6:"乾",7:"兑",8:"艮",9:"离"};
+    return map[gua] || "中";
+}
+
+// 吉位
+function getLuckyDir(gua) {
+    const map = {"坎":"北方","坤":"西南","震":"东方","巽":"东南","乾":"西北","兑":"西方","艮":"东北","离":"南方","中":"中央"};
+    return map[gua] || "东方";
+}
+
+// 幸运色
+function getLuckyColor(w) {
+    const c = {"金":"白、金、银","木":"绿、青、碧","水":"黑、蓝、灰","火":"红、紫、橙","土":"黄、咖啡、米"};
+    return c[w];
+}
+
+// 八字
+function getBaZi(y,m,d,h){
+    const tiangan = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+    const dizhi = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+    const yg = tiangan[(y-4)%10];
+    const yz = dizhi[(y-4)%12];
+    return `${yg}${yz}年 柱`;
+}
+
+// 强弱
+function getBaZiStrength(year, w){
+    return year%2===0 ? "偏强" : "中和";
+}
+
+// 财运
+function getCaiYun(w, s){
+    const cai = {
+        "金":"正财运稳健，中年后财源广进，适合稳健理财，不宜投机",
+        "木":"偏财运佳，靠智慧技术生财，越努力越富有",
+        "水":"财源灵活，流动生财，适合贸易、服务、人际相关",
+        "火":"正财稳定，靠行动力与热情赚钱，中年运势上扬",
+        "土":"财库厚实，踏实积累，不动产、实业运势极佳"
+    };
+    return cai[w] + (s==="偏强"?"，守财能力强。":"，得贵人助财。");
+}
+
+// 婚姻
+function getHunYin(gender, w, s){
+    const hun = {
+        "金":"重情重义，伴侣忠诚，婚姻稳定长久",
+        "木":"温柔体贴，感情细腻，家庭和睦",
+        "水":"浪漫多情，沟通顺畅，婚姻幸福美满",
+        "火":"热情直接，感情浓烈，婚姻充满活力",
+        "土":"稳重顾家，责任心强，婚姻安稳长久"
+    };
+    return hun[w] + (gender==="男"?"，妻贤子孝。":"，夫疼家和。");
+}
+
+// 健康
+function getJianKang(w){
+    const jk = {
+        "金":"注意呼吸系统、咽喉，多运动增强免疫力",
+        "木":"注意肝胆、颈椎，保持作息规律少熬夜",
+        "水":"注意肾脏、泌尿系统，少生冷多保暖",
+        "火":"注意心脏、血液循环，少急躁多静心",
+        "土":"注意脾胃、消化，饮食规律最关键"
+    };
+    return jk[w];
+}
+
+// 流年
+function getLiuNian(year){
+    return "整体运势稳步上升，贵人运旺盛，只要把握机会，事业财运双丰收，家庭和睦，平安吉祥。";
+}
+
+// 行业
+function getIndustry(w){
+    const ind = {
+        "金":"金融、珠宝、五金、法律、汽车、会计",
+        "木":"教育、文化、木材、花卉、医疗、文创",
+        "水":"物流、水产、运输、旅游、娱乐、电商",
+        "火":"餐饮、能源、美容、电子、演艺、能源",
+        "土":"房地产、建筑、矿业、农业、水泥、建材"
+    };
+    return ind[w];
+}
+
+// 风水建议
+function getFengShuiTips(gua, dir, color){
+    return `
+• 床头朝向【${dir}】，利睡眠、健康、贵人运
+• 办公座位面向【${dir}】，提升事业效率
+• 家中【${dir}】保持明亮整洁，忌堆放杂物
+• 衣物、家居多用幸运色【${color}】增强运势
+• 保持家中通风采光，气场流通则运势畅通
+• 可在吉位摆放绿植或吉祥物，催旺财运
+`;
+}
+</script>
+
+</body>
+</html>
